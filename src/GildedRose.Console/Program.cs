@@ -2,36 +2,43 @@
 
 namespace GildedRose.Console
 {
-    class Program
+    public class Program
     {
-        IList<Item> Items;
+        public const string DexterityVest = "+5 Dexterity Vest";
+        public const string AgedBrie = "Ages Brie";
+        public const string ElixirOfTheMongoose = "Elixir of the Mongoose";
+        public const string SulfurasHandOfRagnaros = "Sulfuras, Hand of Ragnaros";
+        public const string BackstageConcertPass = "Backstage passes to a TAFKAL80ETC concert";
+        public const string ConjouredPrefix = "Conjured";
+        public const string ConjouredManaCake = ConjouredPrefix + " Mana Cake";
+
+        public IList<Item> Items { get; set; }
+
+        private Program() { }
+
         static void Main(string[] args)
         {
             System.Console.WriteLine("OMGHAI!");
 
-            var app = new Program()
-                          {
-                              Items = new List<Item>
-                                          {
-                                              new Item {Name = "+5 Dexterity Vest", SellIn = 10, Quality = 20},
-                                              new Item {Name = "Aged Brie", SellIn = 2, Quality = 0},
-                                              new Item {Name = "Elixir of the Mongoose", SellIn = 5, Quality = 7},
-                                              new Item {Name = "Sulfuras, Hand of Ragnaros", SellIn = 0, Quality = 80},
-                                              new Item
-                                                  {
-                                                      Name = "Backstage passes to a TAFKAL80ETC concert",
-                                                      SellIn = 15,
-                                                      Quality = 20
-                                                  },
-                                              new Item {Name = "Conjured Mana Cake", SellIn = 3, Quality = 6}
-                                          }
-
-                          };
-
-            app.UpdateQuality();
+            var app = CreateProgram();
 
             System.Console.ReadKey();
+        }
 
+        public static Program CreateProgram()
+        {
+            return new Program()
+            {
+                Items = new List<Item>
+                {
+                    new Item {Name = DexterityVest, SellIn = 10, Quality = 20},
+                    new Item {Name = AgedBrie, SellIn = 2, Quality = 0},
+                    new Item {Name = ElixirOfTheMongoose, SellIn = 5, Quality = 7},
+                    new Item {Name = SulfurasHandOfRagnaros, SellIn = 0, Quality = 80},
+                    new Item {Name = BackstageConcertPass, SellIn = 15, Quality = 20 },
+                    new Item {Name = ConjouredManaCake, SellIn = 3, Quality = 6}
+                }
+            };
         }
 
         public void UpdateQuality()
