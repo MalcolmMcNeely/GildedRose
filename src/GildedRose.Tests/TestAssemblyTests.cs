@@ -17,7 +17,7 @@ namespace GildedRose.Tests
                                       "SellIn to run test",
                                       Program.DexterityVest));
 
-            var daysToUpdate = dexterityVest.SellIn;
+            var daysToUpdate = dexterityVest.SellIn + 1;
 
             // Age item until the Sell In is definitely zero
             for(int i = 0; i < daysToUpdate; i++)
@@ -25,8 +25,8 @@ namespace GildedRose.Tests
                 program.UpdateQuality();
             }
 
-            Assert.True(dexterityVest.SellIn == 0,
-                        string.Format("{0}'s Sell In is not zero",
+            Assert.True(dexterityVest.SellIn == -1,
+                        string.Format("{0}'s Sell In has not passed",
                                       Program.DexterityVest));
 
             var previousQuality = dexterityVest.Quality;
@@ -68,13 +68,8 @@ namespace GildedRose.Tests
             var program = Program.CreateProgram();
             var agedBrie = GetItemByName(program, Program.AgedBrie);
             var previousQuality = agedBrie.Quality;
-            var previousSellIn = agedBrie.SellIn;
 
             program.UpdateQuality();
-
-            Assert.True(previousSellIn - 1 == agedBrie.SellIn,
-                        string.Format("{0} Sell In has not decreased",
-                                      Program.AgedBrie));
 
             Assert.True(agedBrie.Quality > previousQuality,
                         string.Format("Quality of {0} has not increased with age", 
@@ -129,13 +124,12 @@ namespace GildedRose.Tests
             var program = Program.CreateProgram();
             var backstageConcertPass = GetItemByName(program, Program.BackstageConcertPass);
             int previousQuality;
-            var previousSellIn = backstageConcertPass.SellIn;
 
             Assert.True(backstageConcertPass.SellIn > 11,
                         string.Format("{0}'s Sell In value is not high enough to run all tests",
                                       Program.BackstageConcertPass));
 
-            // Aged item until it's Sell In is 10 days
+            // Aged item until Sell In is 10 days
             while (backstageConcertPass.SellIn > 10)
             {
                 program.UpdateQuality();
@@ -149,7 +143,7 @@ namespace GildedRose.Tests
                         string.Format("{0} Quality has not increased by two", 
                                       Program.BackstageConcertPass));
 
-            // Aged item until it's Sell In is 5 days
+            // Aged item until Sell In is 5 days
             while(backstageConcertPass.SellIn > 5)
             {
                 program.UpdateQuality();
@@ -162,8 +156,15 @@ namespace GildedRose.Tests
             Assert.True(backstageConcertPass.Quality == previousQuality + 3,
                         string.Format("{0}'s Quality has not incremented by three",
                                       Program.BackstageConcertPass));
+        }
 
-            // Aged item until it's Sell In is -1 days
+        [Fact]
+        public void BackstagePassHasNoValueAfterConcert()
+        {
+            var program = Program.CreateProgram();
+            var backstageConcertPass = GetItemByName(program, Program.BackstageConcertPass);
+
+            // Aged item until Sell In is -1 days
             while (backstageConcertPass.SellIn > -1)
             {
                 program.UpdateQuality();
@@ -174,7 +175,6 @@ namespace GildedRose.Tests
                                       Program.BackstageConcertPass));
         }
 
-        // Conjoured item test
         [Fact]
         public void ConjouredItemsDegradeTwiceAsFast()
         {

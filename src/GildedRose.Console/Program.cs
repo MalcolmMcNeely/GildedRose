@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace GildedRose.Console
 {
@@ -43,80 +44,102 @@ namespace GildedRose.Console
 
         public void UpdateQuality()
         {
-            for (var i = 0; i < Items.Count; i++)
+            foreach(var item in Items)
             {
-                if (Items[i].Name != "Aged Brie" && Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
+                if (item.Name == SulfurasHandOfRagnaros)
                 {
-                    if (Items[i].Quality > 0)
-                    {
-                        if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                        {
-                            Items[i].Quality = Items[i].Quality - 1;
-                        }
-                    }
-                }
-                else
-                {
-                    if (Items[i].Quality < 50)
-                    {
-                        Items[i].Quality = Items[i].Quality + 1;
-
-                        if (Items[i].Name == "Backstage passes to a TAFKAL80ETC concert")
-                        {
-                            if (Items[i].SellIn < 11)
-                            {
-                                if (Items[i].Quality < 50)
-                                {
-                                    Items[i].Quality = Items[i].Quality + 1;
-                                }
-                            }
-
-                            if (Items[i].SellIn < 6)
-                            {
-                                if (Items[i].Quality < 50)
-                                {
-                                    Items[i].Quality = Items[i].Quality + 1;
-                                }
-                            }
-                        }
-                    }
+                    // Sulfuras is immutable
+                    continue;
                 }
 
-                if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                {
-                    Items[i].SellIn = Items[i].SellIn - 1;
-                }
+                // Decrease Sell In for all other items
+                item.SellIn -= 1;
 
-                if (Items[i].SellIn < 0)
-                {
-                    if (Items[i].Name != "Aged Brie")
-                    {
-                        if (Items[i].Name != "Backstage passes to a TAFKAL80ETC concert")
-                        {
-                            if (Items[i].Quality > 0)
-                            {
-                                if (Items[i].Name != "Sulfuras, Hand of Ragnaros")
-                                {
-                                    Items[i].Quality = Items[i].Quality - 1;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Items[i].Quality = Items[i].Quality - Items[i].Quality;
-                        }
-                    }
-                    else
-                    {
-                        if (Items[i].Quality < 50)
-                        {
-                            Items[i].Quality = Items[i].Quality + 1;
-                        }
-                    }
-                }
+                AdjustItemQuality(item);
             }
         }
 
+        private void AdjustItemQuality(Item item)
+        {
+            switch (item.Name)
+            {
+                case AgedBrie:
+                    {
+                        AdjustAgedBrieQuality(item);
+                        break;
+                    }
+                case BackstageConcertPass:
+                    {
+                        AdjustBackstagePassQuality(item);
+                        break;
+                    }
+                default:
+                    {
+                        AdjustNormalItemQuality(item);
+                        break;
+                    }
+            }
+        }
+
+        private void AdjustAgedBrieQuality(Item item)
+        {
+            // Quality can not be above 50
+            if (item.Quality < 50)
+            {
+                // Aged Brie Quality increases the older it gets
+                item.Quality++;
+            }
+        }
+
+        private void AdjustBackstagePassQuality(Item item)
+        {
+            if (item.SellIn < 0 &&
+                item.Quality != 0)
+            {
+                // Backstage pass is worthless after the concert
+                item.Quality = 0;
+                return;
+            }
+
+            // Quality can not be above 50
+            if (item.Quality < 50)
+            {
+                var newQuality = item.Quality;
+
+                // Backstage pass gets more valuable 
+                // as the conert draws near
+                if(item.SellIn <= 5)
+                {
+                    newQuality += 2;
+                }
+                else if (item.SellIn <= 10)
+                {
+                    newQuality++;
+                }
+
+                newQuality++;
+
+                // Quality can not go above 50
+                item.Quality = Math.Min(newQuality, 50);
+            }
+        }
+
+        private void AdjustNormalItemQuality(Item item)
+        {
+            // Quality can not be below 0
+            if (item.Quality != 0)
+            {
+                // Conjoured items degrade twice as fast
+                var degredationMultiplier = item.Name.StartsWith(ConjouredPrefix) ? 2 : 1;
+
+                // Items degrade by 1, but degrade twice
+                // as fast when past Sell In is less than 0
+                var degredationValue = (item.SellIn >= 0 ? 1 : 2) * degredationMultiplier;
+
+                // Quality can not go below 0
+                item.Quality = Math.Max(item.Quality - degredationValue, 0);
+            }
+        }
     }
 
     public class Item
