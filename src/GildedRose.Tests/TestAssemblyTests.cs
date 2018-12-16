@@ -129,7 +129,7 @@ namespace GildedRose.Tests
                         string.Format("{0}'s Sell In value is not high enough to run all tests",
                                       Program.BackstageConcertPass));
 
-            // Aged item until Sell In is 10 days
+            // Age item until Sell In is 10 days
             while (backstageConcertPass.SellIn > 10)
             {
                 program.UpdateQuality();
@@ -143,7 +143,7 @@ namespace GildedRose.Tests
                         string.Format("{0} Quality has not increased by two", 
                                       Program.BackstageConcertPass));
 
-            // Aged item until Sell In is 5 days
+            // Age item until Sell In is 5 days
             while(backstageConcertPass.SellIn > 5)
             {
                 program.UpdateQuality();
@@ -164,7 +164,7 @@ namespace GildedRose.Tests
             var program = Program.CreateProgram();
             var backstageConcertPass = GetItemByName(program, Program.BackstageConcertPass);
 
-            // Aged item until Sell In is -1 days
+            // Age item until Sell In is -1 days
             while (backstageConcertPass.SellIn > -1)
             {
                 program.UpdateQuality();
